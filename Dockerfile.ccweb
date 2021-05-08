@@ -1,69 +1,18 @@
-FROM alpine:3.11
-
-# use php.earth for alpine
-# https://docs.php.earth/linux/alpine/
-
-RUN apk update
-
-RUN apk add --no-cache wget ca-certificates \
-&& wget -O /etc/apk/keys/phpearth.rsa.pub https://repos.php.earth/alpine/phpearth.rsa.pub \
-&& echo "https://repos.php.earth/alpine/v3.9" >> /etc/apk/repositories
-
-RUN apk add --no-cache php7.3
-
-RUN apk add php7-fpm
-
-RUN apk add --no-cache \
-  # php7.3-common@php \
-  # php7.3-intl \
-  php7.3-memcached \
-  php7.3-curl \
-  php7.3-dom \
-  php7.3-exif \
-  php7.3-ftp \
-  php7.3-gd \
-  php7.3-iconv \
-  php7.3-mbstring \
-  php7.3-mysqli \
-  php7.3-mysqlnd \
-  php7.3-openssl \
-  php7.3-pdo \
-  php7.3-session \
-  php7.3-posix \
-  php7.3-soap \
-  php7.3-zip \
-  php7.3-ldap \
-  php7.3-bcmath \
-  php7.3-calendar \
-  php7.3-gettext \
-  php7.3-json \
-  php7.3-pcntl \
-  php7.3-apcu \
-  php7.3-phar \
-  php7.3-sockets \
-  php7.3-tidy \
-  php7.3-wddx \
-  php7.3-xmlreader \
-  php7.3-zlib \
-  php7.3-xsl \
-  php7.3-opcache \
-  # php7.3-imagick \
-  php7.3-ctype \
-  php7.3-pdo_mysql \
-  php7.3-pdo_sqlite \
-  php7.3-sqlite3 \
-  php7.3-redis \
-  php7.3-fpm
-  # php7.3-swoole
-# RUN pecl install swoole
+FROM alpine:3.13
 
 RUN apk add --no-cache bash supervisor curl
+
+# Add PHP public keys
+ADD https://github.com/codecasts/php-alpine/blob/master/php-alpine.rsa.pub /etc/apk/keys/php-alpine.rsa.pub
+# ADD https://dl.bintray.com/php-alpine/key/php-alpine.rsa.pub /etc/apk/keys/php-alpine.rsa.pub
+RUN apk --no-cache add ca-certificates openssl && \
+  echo "@php https://dl.bintray.com/php-alpine/v3.9/php-7.3" >> /etc/apk/repositories
+
 # Install nginx
 
 ENV NGINX_VERSION 1.17.0
 
-# Add PHP public keys
-# ADD https://dl.bintray.com/php-alpine/key/php-alpine.rsa.pub /etc/apk/keys/php-alpine.rsa.pub
+
 
 RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
   && CONFIG="\
@@ -232,13 +181,62 @@ COPY scripts/supervisor-healthcheck.sh /supervisor-healthcheck.sh
 COPY scripts/healthcheck.py /healthcheck.py
 RUN chmod +x /supervisor-healthcheck.sh
 
+
+RUN apk add --no-cache php7-fileinfo
+# RUN apk add --no-cache \
+#   php7@php \
+#   php7-common@php \
+#   php7-memcached@php \
+#   php7-curl@php \
+#   php7-dom@php \
+#   php7-exif@php \
+#   php7-ftp@php \
+#   php7-gd@php \
+#   php7-iconv@php \
+#   php7-mbstring@php \
+#   php7-mysqli@php \
+#   php7-mysqlnd@php \
+#   php7-openssl@php \
+#   php7-pdo@php \
+#   php7-session@php \
+#   php7-posix@php \
+#   php7-soap@php \
+#   php7-zip@php \
+#   php7-ldap@php \
+#   php7-bcmath@php \
+#   php7-calendar@php \
+#   php7-gettext@php \
+#   php7-json@php \
+#   php7-pcntl@php \
+#   php7-apcu@php \
+#   php7-phar@php \
+#   php7-sockets@php \
+#   php7-tidy@php \
+#   php7-wddx@php \
+#   php7-xmlreader@php \
+#   php7-zip@php \
+#   php7-zlib@php \
+#   php7-xsl@php \
+#   php7-opcache@php \
+#   # php7-imagick@php \
+#   php7-ctype@php \
+#   php7-pdo_mysql@php \
+#   php7-pdo_sqlite@php \
+#   php7-sqlite3@php \
+#   php7-redis@php \
+#   php7-intl@php \
+#   php7-fpm@php \
+#   php7-tokenizer \
+#   php7-swoole@php
+
+
 # Imagick support file types
 RUN apk add --no-cache imagemagick
-# temp close
+
 RUN mkdir -p /src && \
   ln -s /etc/php7 /etc/php && \
-  # ln -s /usr/bin/php7 /usr/bin/php && \
-  ln -s /usr/sbin/php-fpm /usr/bin/php-fpm
+  ln -s /usr/bin/php7 /usr/bin/php && \
+  ln -s /usr/sbin/php-fpm7 /usr/bin/php-fpm
 
 # Install Syslog-ng
 RUN apk add --no-cache syslog-ng
@@ -283,16 +281,15 @@ ADD conf/php-fpm.conf /etc/php/php-fpm.conf
 ADD conf/php.ini /etc/php/php.ini
 ADD conf/php-www.conf /etc/php/php-fpm.d/www.conf
 
-#temp close
 # Test PHP-FPM
-RUN /usr/bin/php-fpm --fpm-config /etc/php/php-fpm.conf -t
+# RUN /usr/bin/php-fpm --fpm-config /etc/php/php-fpm.conf -t
 
-# # Create directory for store config & add download config file script
+# Create directory for store config & add download config file script
 # RUN mkdir -p /var/www/private
 # ADD scripts/config.sh /config.sh
 
 # Add healthcheck for FPM
-ADD healthz.php /var/www/site/healthz.php
+# ADD healthz.php /var/www/site/healthz.php
 
 # Cron
 RUN mkdir -p /etc/cron.d
