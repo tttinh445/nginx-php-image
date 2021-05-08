@@ -215,7 +215,7 @@ RUN apk add --no-cache \
   php7-zlib@php \
   php7-xsl@php \
   php7-opcache@php \
-  php7-imagick@php \
+  # php7-imagick@php \
   php7-ctype@php \
   php7-pdo_mysql@php \
   php7-pdo_sqlite@php \
@@ -224,15 +224,16 @@ RUN apk add --no-cache \
   php7-intl@php \
   php7-fpm@php \
   php7-tokenizer \
-  php7-fileinfo \
   php7-swoole@php
 
-# RUN apk --no-cache add pcre-dev ${PHPIZE_DEPS} \
-#   && pecl install xdebug \
-#   && docker-php-ext-enable xdebug \
-#   && apk del pcre-dev ${PHPIZE_DEPS}
-# RUN yum -y install gcc
-# RUN docker-php-ext-install
+RUN apk --no-cache add pcre-dev ${PHPIZE_DEPS} \
+  && pecl install xdebug \
+  && docker-php-ext-enable xdebug \
+  && apk del pcre-dev ${PHPIZE_DEPS}
+RUN yum -y install gcc
+RUN docker-php-ext-install
+
+RUN docker-php-ext-install fileinfo
 
 # Imagick support file types
 RUN apk add --no-cache imagemagick
