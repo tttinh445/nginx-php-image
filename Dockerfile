@@ -16,6 +16,7 @@ RUN apk add php7-fpm
 RUN apk add --no-cache \
   # php7.3-common@php \
   # php7.3-intl \
+  php7.3-fileinfo \
   php7.3-memcached \
   php7.3-curl \
   php7.3-dom \
