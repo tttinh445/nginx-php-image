@@ -54,6 +54,7 @@ RUN apk add --no-cache \
   php7.3-pdo_sqlite \
   php7.3-sqlite3 \
   php7.3-redis \
+  php7.3-tokenizer \
   php7.3-fpm
   # php7.3-swoole
 # RUN pecl install swoole
