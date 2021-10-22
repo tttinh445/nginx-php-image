@@ -45,6 +45,7 @@ RUN apk add --no-cache \
   php7.3-tidy \
   php7.3-wddx \
   php7.3-xmlreader \
+  php7.3-xml \
   php7.3-zlib \
   php7.3-xsl \
   php7.3-opcache \
