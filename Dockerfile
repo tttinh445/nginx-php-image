@@ -45,7 +45,9 @@ RUN apk add --no-cache \
   php7.3-tidy \
   php7.3-wddx \
   php7.3-xmlreader \
+  php7.3-xmlwriter \
   php7.3-xml \
+  php7.3-simplexml \
   php7.3-zlib \
   php7.3-xsl \
   php7.3-opcache \
@@ -57,6 +59,7 @@ RUN apk add --no-cache \
   php7.3-redis \
   php7.3-tokenizer \
   php7.3-fpm
+
   # php7.3-swoole
 # RUN pecl install swoole
 
